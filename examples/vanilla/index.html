@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Reading with Intention — zero-bundler example</title>
+<!-- In a real site, point these at the npm package's dist/ (or a CDN
+     build, e.g. https://unpkg.com/reading-with-intention/dist/style.css)
+     instead of a relative path — this example just runs against the
+     package's own build output so it works straight out of the repo. -->
+<link rel="stylesheet" href="../../dist/style.css" />
+<style>
+  body { max-width: 640px; margin: 3rem auto; padding: 0 1rem; font: 18px/1.6 Georgia, serif; }
+  .rwi { --rwi-accent: 210 90% 55%; } /* pick your own theme color */
+  button { font: inherit; margin-top: 1.5rem; padding: 0.4em 1em; }
+</style>
+</head>
+<body>
+  <h1 style="font-family: -apple-system, sans-serif;">Reading with Intention</h1>
+  <p style="font-family: -apple-system, sans-serif; opacity: 0.7;">
+    No build step, no framework — just the script tag and stylesheet below.
+  </p>
+
+  <div id="reader" class="rwi">
+    <p>Okay, just breathe. We're almost out.</p>
+    <p>"RUN!" she screamed, and they did.</p>
+  </div>
+
+  <button id="play">▶ Play</button>
+
+  <!-- The zero-bundler build: exposes `window.ReadingWithIntention`. -->
+  <script src="../../dist/index.global.js"></script>
+  <script>
+    const { createHighlighter, mapSegmentsToWordRanges, rangeAtMs } = ReadingWithIntention;
+
+    const container = document.getElementById("reader");
+    const highlighter = createHighlighter(container);
+
+    // Stand-in "timing data" — in a real app this comes from your TTS API's
+    // word-boundary events or a pre-generated timing file, not hardcoded.
+    const ranges = mapSegmentsToWordRanges(highlighter.tokens, [
+      { text: "Okay, just breathe. We're almost out.", startMs: 0, endMs: 2600, speakerId: "kira", intensity: -1 },
+      { text: '"RUN!" she screamed, and they did.', startMs: 2900, endMs: 4400, speakerId: "voice", intensity: 2, emotion: "afraid" },
+    ]);
+    const colors = { kira: "#5ec8ff", voice: "#ff4a6a" };
+
+    let raf = null;
+    let startedAt = 0;
+    function tick() {
+      const ms = performance.now() - startedAt;
+      const range = rangeAtMs(ranges, ms);
+      if (range && ms <= ranges[ranges.length - 1].endMs) {
+        const fraction = Math.min(Math.max((ms - range.startMs) / (range.endMs - range.startMs), 0), 1);
+        const wordIndex = Math.min(
+          range.wordStart + Math.floor(fraction * (range.wordEnd - range.wordStart)),
+          range.wordEnd - 1
+        );
+        highlighter.setHighlight({
+          wordIndex,
+          color: colors[range.speakerId],
+          intensity: range.intensity,
+          emotion: range.emotion,
+          jump: true,
+        });
+        raf = requestAnimationFrame(tick);
+      } else {
+        highlighter.setHighlight(null);
+      }
+    }
+
+    document.getElementById("play").addEventListener("click", () => {
+      cancelAnimationFrame(raf);
+      startedAt = performance.now();
+      tick();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+/*
+ * Reading with Intention — default stylesheet.
+ *
+ * Every color is a CSS custom property with a fallback, so you can either
+ * use this as-is or override `--rwi-accent` (and friends) to match your own
+ * theme without forking the file. Scope everything under a class of your
+ * choice (default: .rwi) so it only applies inside your reader, not your
+ * whole app.
+ */
+
+.rwi {
+  --rwi-accent: 36 82% 58%; /* "H S% L%" triplet, used via hsl(var(--rwi-accent)) */
+}
+
+.rwi .rwi-sentence {
+  background-color: var(--rwi-sentence-bg, hsl(var(--rwi-accent) / 0.16));
+  border-radius: 3px;
+}
+
+/*
+ * Variable typography: --rwi-scale/--rwi-weight/--rwi-jump are set on only
+ * the single word currently highlighted, from deliveryStyle.ts's
+ * intensity->{scale,weight,jump} mappings. Applying this to the word
+ * instead of the whole sentence means emphasis is always time-limited — it
+ * settles back to normal the instant the highlight moves to the next word.
+ *
+ * Two growth mechanisms, chosen by the `overlap` flag on HighlightState:
+ *   - default (.rwi-word without .rwi-overlap): --rwi-scale drives
+ *     font-size, which reflows the line — neighboring words get pushed
+ *     apart, never covered.
+ *   - opt-in (.rwi-word.rwi-overlap): --rwi-word-scale drives a transform
+ *     instead, which doesn't reflow — the word can visually overlap a
+ *     neighbor, for a more dramatic single emphasized word.
+ */
+.rwi .rwi-word {
+  background-color: var(--rwi-word-bg, hsl(var(--rwi-accent)));
+  color: white;
+  border-radius: 3px;
+  padding: 0 1px;
+  font-size: calc(1em * var(--rwi-scale, 1));
+  font-weight: var(--rwi-weight, inherit);
+  transform: scale(var(--rwi-word-scale, 1));
+  transition: font-size 140ms ease, font-weight 140ms ease, transform 140ms ease, background-color 120ms ease;
+}
+.rwi .rwi-word.rwi-overlap {
+  position: relative;
+  z-index: 2;
+}
+
+/* Letter mode: the active word's characters are temporarily split into
+   individual .rwi-char spans and jump in a stagger via --i (each char's
+   index) instead of moving as one block. */
+.rwi .rwi-char {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rwi .rwi-word.rwi-jump {
+    animation: rwi-jump 220ms cubic-bezier(.3, 1.4, .4, 1);
+  }
+  @keyframes rwi-jump {
+    0%   { transform: translateY(0) scale(var(--rwi-word-scale, 1)); }
+    40%  { transform: translateY(var(--rwi-jump, 0px)) scale(var(--rwi-word-scale, 1)); }
+    100% { transform: translateY(0) scale(var(--rwi-word-scale, 1)); }
+  }
+  .rwi .rwi-char {
+    animation: rwi-jump 260ms cubic-bezier(.3, 1.4, .4, 1);
+    animation-delay: calc(var(--i, 0) * 28ms);
+    animation-fill-mode: backwards;
+  }
+}
+
+/* Delivery emotion — subtle typographic accents. */
+.rwi .rwi-emotion-angry     { letter-spacing: 0.01em; }
+.rwi .rwi-emotion-sad       { font-style: italic; opacity: 0.92; }
+.rwi .rwi-emotion-afraid    { letter-spacing: 0.015em; }
+.rwi .rwi-emotion-surprised { font-weight: 600; }

@@ -1,0 +1,66 @@
+{
+  "name": "reading-with-intention",
+  "version": "0.1.0",
+  "description": "Word-by-word, audio-follows-text highlighting for reading UIs — color-coded speaker attribution, sync-to-audio reveal, and variable typography (size/weight/jump) for delivery intensity and emotion. Framework-neutral core, optional React binding.",
+  "license": "MIT",
+  "homepage": "https://github.com/L0stFromSleep/The-Brilliant-Emporium/tree/reading-with-intention",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/L0stFromSleep/The-Brilliant-Emporium.git#reading-with-intention"
+  },
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/index.global.js",
+  "jsdelivr": "./dist/index.global.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js",
+      "require": "./dist/react.cjs"
+    },
+    "./global": "./dist/index.global.js",
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsup && cp src/style.css dist/style.css",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "react": ">=17"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "react": "^18.3.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.0"
+  },
+  "keywords": [
+    "captions",
+    "accessibility",
+    "audiobook",
+    "text-highlighting",
+    "read-aloud",
+    "kinetic-typography"
+  ]
+}
