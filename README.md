@@ -27,9 +27,9 @@ in a tiny, framework-neutral library with an optional React binding.
 
 <div align="center">
 
-![Reading with Intention demo: three speakers, each in their own color, with the current word highlighted in time and typography that grows, bolds and jumps with delivery](.github/assets/demo.gif)
+![Reading with Intention demo: a tense scene that goes from a whispered line to a full shout and back to quiet, with three speakers in their own colors and type that shrinks, thins, grows and bolds with delivery](.github/assets/demo.gif)
 
-<sub>Recorded from the real library running in a browser. Three speakers · sentence + word highlight in time · a shouted word grows, bolds and jumps.</sub>
+<sub>The captions are the real library, recorded in a browser. A whisper (−2) builds to a shout (+2) and falls back to quiet: three speakers, word-by-word timing, and size, weight and jump that follow delivery. The waveform, meter and background glow are the demo page's own UI, not part of the library.</sub>
 
 </div>
 
